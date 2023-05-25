@@ -6,68 +6,65 @@
 
 bool VERBOSE = false;
 
-void RandomTest()
+#include <iostream>
+#include <stdexcept>
+
+class IntK
 {
-    int QUERIES = 10;
-    int MAX_RANGE = 21;
+private:
+    int val;
 
-    auto chars = {'A', 'B', 'C', 'D', 'E'};
-    auto random_char = [&chars]()
-    {
-        return *(chars.begin() + (rand() % chars.size()));
-    };
-    auto random_int = [](int n)
-    {
-        return rand() % n;
-    };
+public:
+    IntK(int v) : val(v) {} // Custom constructor to enforce no default constructor
 
-    auto default_value = 'A';
-    interval_map<int, char> interval(default_value);
+    // Copy constructor
+    IntK(const IntK &other) : val(other.val) {}
 
-    std::vector<std::pair<std::pair<int, int>, char>> queries;
-
-    int query_number = random_int(QUERIES);
-    std::cerr << "Testcase" << std::endl;
-    for (int i = 0; i < query_number; ++i)
+    // Copy assignment operator
+    IntK &operator=(const IntK &other)
     {
-        int start = random_int(MAX_RANGE);
-        int end = random_int(MAX_RANGE);
-        char val = random_char();
-        std::cerr << "assign: " << start << " " << end << " " << val << std::endl;
-        interval.assign(start, end, val);
-        queries.push_back({{start, end}, val});
-        interval.debug();
-        std::cerr << "-----" << std::endl;
-    }
-    reverse(queries.begin(), queries.end());
-    for (int p = -1; p < MAX_RANGE + 1; ++p)
-    {
-        auto ans = default_value;
-        for (auto &q : queries)
+        if (this != &other)
         {
+            val = other.val;
+        }
+        return *this;
+    }
 
-            if (q.first.first <= p && p < q.first.second)
-            {
-                ans = q.second;
-                break;
-            }
-        }
-        std::cerr << "query: " << p << " " << ans << " " << interval[p] << std::endl;
-        assert(interval[p] == ans);
-    }
-    if (!interval.getMap().empty())
+    // Less-than comparison
+    bool operator<(const IntK &other) const
     {
-        assert(interval.getMap().begin()->second != default_value);
-        // assert that there are no two consecutive values in the map
-        for (auto it = interval.getMap().begin(); it != prev(interval.getMap().end()); ++it)
-        {
-            assert(it->second != next(it)->second);
-        }
-        assert(interval.getMap().rbegin()->second == default_value);
+        return val < other.val;
     }
-    std::cerr << "Testcase passed." << std::endl
-              << std::endl;
-}
+};
+
+class CharV
+{
+private:
+    char val;
+
+public:
+    CharV(char v) : val(v) {} // Custom constructor to enforce no default constructor
+
+    // Copy constructor
+    CharV(const CharV &other) : val(other.val) {}
+
+    // Copy assignment operator
+    CharV &operator=(const CharV &other)
+    {
+        if (this != &other)
+        {
+            val = other.val;
+        }
+        return *this;
+    }
+
+    // Equality comparison
+    bool operator==(const CharV &other) const
+    {
+        return val == other.val;
+    }
+};
+
 void IntervalMapTest()
 {
     // Test case 1: Initial interval map with 'A'
@@ -218,6 +215,74 @@ void IntervalMapTest()
     std::cout << "All small test cases passed." << std::endl;
 }
 
+void RandomTest()
+{
+    int QUERIES = 10;
+    int MAX_RANGE = 21;
+
+    auto chars = {'A', 'B', 'C', 'D', 'E'};
+    auto random_char = [&chars]()
+    {
+        return *(chars.begin() + (rand() % chars.size()));
+    };
+    auto random_int = [](int n)
+    {
+        return rand() % n;
+    };
+
+    auto default_value = 'A';
+    interval_map<int, char> interval(default_value);
+
+    std::vector<std::pair<std::pair<int, int>, char>> queries;
+
+    int query_number = random_int(QUERIES);
+    std::cerr << "Testcase" << std::endl;
+    for (int i = 0; i < query_number; ++i)
+    {
+        int start = random_int(MAX_RANGE);
+        int end = random_int(MAX_RANGE);
+        char val = random_char();
+        std::cerr << "assign: " << start << " " << end << " " << val << std::endl;
+        interval.assign(start, end, val);
+        queries.push_back({{start, end}, val});
+        interval.debug();
+        std::cerr << "-----" << std::endl;
+    }
+    reverse(queries.begin(), queries.end());
+    for (int p = -1; p < MAX_RANGE + 1; ++p)
+    {
+        auto ans = default_value;
+        for (auto &q : queries)
+        {
+
+            if (q.first.first <= p && p < q.first.second)
+            {
+                ans = q.second;
+                break;
+            }
+        }
+        std::cerr << "query: " << p << " " << ans << " " << interval[p] << std::endl;
+        assert(interval[p] == ans);
+    }
+    if (!interval.getMap().empty())
+    {
+        assert(interval.getMap().begin()->second != default_value);
+        // assert that there are no two consecutive values in the map
+        for (auto it = interval.getMap().begin(); it != prev(interval.getMap().end()); ++it)
+        {
+            assert(it->second != next(it)->second);
+        }
+        assert(interval.getMap().rbegin()->second == default_value);
+    }
+    std::cerr << "Testcase passed." << std::endl
+              << std::endl;
+}
+
+void TypeTest()
+{
+    interval_map<IntK, CharV> interval('A');
+    interval.assign(1, 2, 'B');
+}
 int main()
 {
     if (!VERBOSE)
