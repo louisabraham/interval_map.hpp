@@ -26,7 +26,7 @@ public:
 
         auto lower_it = m_map.upper_bound(keyBegin);
 
-        // initialize to avoid assuming that K is default constructible
+        // initialize to avoid assuming that V is default constructible
         V cur_value = default_value;
         // compute cur_value = interval[keyBegin]
         if (lower_it == m_map.begin())
