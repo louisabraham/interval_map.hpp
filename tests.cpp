@@ -1,13 +1,7 @@
 #include <iostream>
-#include <cassert>
-#include <utility>
-#include <vector>
 #include "interval_map.hpp"
 
 bool VERBOSE = false;
-
-#include <iostream>
-#include <stdexcept>
 
 class IntK
 {
